@@ -190,7 +190,7 @@ if [ ! -e /usr/local/bin/kubectl ]; then
     sudo mv kubectl /usr/local/bin/
 fi
 ### DOWNLOAD: cni
-if [ ! -e /opt/cni/bin ]; then
+if [ ! -e /opt/cni/bin/bridge ]; then
     wget https://github.com/containernetworking/cni/releases/download/$CNI_VERSION/cni-amd64-$CNI_VERSION.tgz
     sudo mkdir -p /opt/cni/bin
     sudo tar -xf cni-amd64-$CNI_VERSION.tgz -C /opt/cni/bin/
@@ -226,6 +226,7 @@ grep -rl quay.io/coreos/hyperkube:$KUBERNETES_VERSION'_coreos.0' $BOOTKUBE_DIR/.
 echo_green "\nPhase VIII: Preparing the environment for Kubernetes to run for the first time:"
 sudo systemctl daemon-reload
 sudo systemctl restart kubelet.service
+
 sudo cp $BOOTKUBE_DIR/.bootkube/auth/kubeconfig /etc/kubernetes/
 sudo cp -a $BOOTKUBE_DIR/.bootkube/* /etc/kubernetes/
 mkdir -p $HOME/.kube
