@@ -14,6 +14,30 @@
 # limitations under the License.
 #
 ### Declare colors to use during the running of this script:
+
+RESOLV=true
+
+while getopts rh opt; do
+    case $opt in
+        r)
+            RESOLV=false
+            ;;
+        h)
+            HELP=true
+    esac
+done
+
+if [ ${HELP} = true ]; then
+    echo "usage: bootkube-up.sh [-r]
+OPTIONS
+    -r  skip updating the resolv.conf file to have the cluster name server
+
+"
+    exit;
+fi
+
+exit
+
 declare -r GREEN="\033[0;32m"
 declare -r RED="\033[0;31m"
 
@@ -65,18 +89,22 @@ NSEARCH02: $NSEARCH02
 KUBE_IMAGE: $KUBE_IMAGE
 KUBE_IP: $KUBE_IP \n \n"
 
-### PREPARE: /etc/resolv.conf
-echo_green "\nPhase III: Preparing system DNS:"
-sudo cp /etc/resolv.conf $BOOTKUBE_DIR/bootkube-ci/backups/
-### PREPARE: /etc/resolv.conf
-sudo -E bash -c "cat <<EOF > /etc/resolvconf/resolv.conf.d/head
-nameserver $NSERVER01
-EOF"
-sudo -E bash -c "cat <<EOF > /etc/resolvconf/resolv.conf.d/base
-search kubernetes $KUBE_DNS_API $NSEARCH01 $NSEARCH02
-EOF"
-sudo resolvconf -u
 
+if [ $RESOLV = true ]; then
+    ### PREPARE: /etc/resolv.conf
+    echo_green "\nPhase III: Preparing resolv.conf"
+    sudo cp /etc/resolv.conf $BOOTKUBE_DIR/bootkube-ci/backups/
+    ### PREPARE: /etc/resolv.conf
+    sudo -E bash -c "cat <<EOF > /etc/resolvconf/resolv.conf.d/head
+    nameserver $NSERVER01
+    EOF"
+    sudo -E bash -c "cat <<EOF > /etc/resolvconf/resolv.conf.d/base
+    search kubernetes $KUBE_DNS_API $NSEARCH01 $NSEARCH02
+    EOF"
+    sudo resolvconf -u
+else
+    echo_green "\nPhase III: Skipping resolv.conf"
+fi
 
 ### PREPARE: /etc/hosts with idempotency (hostess):
 wget https://github.com/cbednarski/hostess/releases/download/v0.2.0/hostess_linux_amd64
