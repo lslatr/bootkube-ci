@@ -215,11 +215,11 @@ rm -rf /tmp/download
 ### RENDER ASSETS:
 echo_green "\nPhase VI: Running Bootkube to render the Kubernetes assets:"
 bootkube render --asset-dir=$BOOTKUBE_DIR/.bootkube --experimental-self-hosted-etcd --etcd-servers=http://10.3.0.15:12379 --api-servers=https://$KUBE_DNS_API:443 --pod-cidr=$KUBE_POD_CIDR --service-cidr=$KUBE_SVC_CIDR
-sudo rm -rf $BOOTKUBE_DIR/.bootkube/manifests/kube-flannel*
+rm -rf $BOOTKUBE_DIR/.bootkube/manifests/kube-flannel*
 
 ### REQUIRED FOR CEPH/OPTIONAL ALL OTHERS:
 echo_green "\nPhase VII: If requested, modifying the rendered assets to include a custom Hyperkube image:"
-sudo grep -rl quay.io/coreos/hyperkube:$KUBERNETES_VERSION'_coreos.0' $BOOTKUBE_DIR/.bootkube/ | sudo xargs sed -i "s|quay.io/coreos/hyperkube:"$KUBERNETES_VERSION"_coreos.0|quay.io/"$KUBE_IMAGE":"$KUBERNETES_VERSION"|g"
+grep -rl quay.io/coreos/hyperkube:$KUBERNETES_VERSION'_coreos.0' $BOOTKUBE_DIR/.bootkube/ | xargs sed -i "s|quay.io/coreos/hyperkube:"$KUBERNETES_VERSION"_coreos.0|quay.io/"$KUBE_IMAGE":"$KUBERNETES_VERSION"|g"
 
 ### DEPLOY KUBERNETES SELF-HOSTED CLUSTER:
 echo_green "\nPhase VIII: Preparing the environment for Kubernetes to run for the first time:"
@@ -227,12 +227,12 @@ sudo systemctl daemon-reload
 sudo systemctl restart kubelet.service
 sudo cp $BOOTKUBE_DIR/.bootkube/auth/kubeconfig /etc/kubernetes/
 sudo cp -a $BOOTKUBE_DIR/.bootkube/* /etc/kubernetes/
-sudo mkdir -p $BOOTKUBE_DIR/.kube
-sudo cp /etc/kubernetes/kubeconfig ~/.kube/config
-sudo chmod 644 ~/.kube/config
+mkdir -p $HOME/.kube
+sudo cp /etc/kubernetes/kubeconfig $HOME/.kube/config
+sudo chown $USER ~/.kube/config
 
 echo_green "\nPhase IX: Running Bootkube start to bring up the temporary Kubernetes self-hosted control plane:"
-nohup sudo bash -c 'bootkube start --asset-dir='$BOOTKUBE_DIR'/.bootkube' &>$BOOTKUBE_DIR/bootkube-ci/log/bootkube-start.log 2>&1 &
+nohup sudo bash -c 'bootkube start --asset-dir='$BOOTKUBE_DIR'/.bootkube' >$BOOTKUBE_DIR/bootkube-ci/log/bootkube-start.log 2>&1 &
 
 ### WAIT FOR KUBERNETES ENVIRONMENT TO COME UP:
 echo -e -n "Waiting for master components to start..."
