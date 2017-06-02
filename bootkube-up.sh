@@ -214,6 +214,7 @@ rm -rf /tmp/download
 
 ### RENDER ASSETS:
 echo_green "\nPhase VI: Running Bootkube to render the Kubernetes assets:"
+mkdir -p $BOOTKUBE_DIR/.bookube
 bootkube render --asset-dir=$BOOTKUBE_DIR/.bootkube --experimental-self-hosted-etcd --etcd-servers=http://10.3.0.15:12379 --api-servers=https://$KUBE_DNS_API:443 --pod-cidr=$KUBE_POD_CIDR --service-cidr=$KUBE_SVC_CIDR
 rm -rf $BOOTKUBE_DIR/.bootkube/manifests/kube-flannel*
 
