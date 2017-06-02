@@ -233,7 +233,7 @@ sudo cp /etc/kubernetes/kubeconfig $HOME/.kube/config
 sudo chown $USER ~/.kube/config
 
 echo_green "\nPhase IX: Running Bootkube start to bring up the temporary Kubernetes self-hosted control plane:"
-nohup sudo bash -c 'bootkube start --asset-dir='$BOOTKUBE_DIR'/.bootkube' >$BOOTKUBE_DIR/bootkube-ci/log/bootkube-start.log 2>&1 &
+nohup sudo bash -c 'bootkube start --asset-dir='$BOOTKUBE_DIR'/.bootkube' > $BOOTKUBE_DIR/bootkube-start.log 2>&1 &
 
 ### WAIT FOR KUBERNETES ENVIRONMENT TO COME UP:
 echo -e -n "Waiting for master components to start..."
