@@ -106,11 +106,11 @@ else
 fi
 
 ### PREPARE: /etc/hosts with idempotency (hostess):
-wget https://github.com/cbednarski/hostess/releases/download/v0.2.0/hostess_linux_amd64
-sudo mv hostess_linux_amd64 /usr/local/bin/hostess
-sudo chmod +x /usr/local/bin/hostess
-
-#sudo -E bash -c 'echo '$KUBE_IP' '$HOSTNAME' '$HOSTNAME'.'$NSEARCH02' '$KUBE_DNS_API' >> /etc/hosts'
+if [ ! -e /usr/local/bin/hostess ]; then
+    wget https://github.com/cbednarski/hostess/releases/download/v0.2.0/hostess_linux_amd64
+    chmod +x /usr/local/bin/hostess
+    sudo mv hostess_linux_amd64 /usr/local/bin/hostess
+fi
 sudo hostess add $KUBE_DNS_API $KUBE_IP
 sudo hostess add kubernetes $KUBE_IP
 
