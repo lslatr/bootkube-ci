@@ -15,6 +15,7 @@
 #
 ### Declare colors to use during the running of this script:
 
+HELP=false
 RESOLV=true
 
 while getopts rh opt; do
@@ -35,8 +36,6 @@ OPTIONS
 "
     exit;
 fi
-
-exit
 
 declare -r GREEN="\033[0;32m"
 declare -r RED="\033[0;31m"
