@@ -13,6 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+source ../.bootkube_env
+
 helm delete --purge magnum
 helm delete --purge mistral
 helm delete --purge senlin
@@ -33,7 +36,6 @@ helm delete --purge bootstrap-ceph
 helm delete --purge ceph
 sudo rm -rf /var/lib/openstack-helm
 sudo rm -rf /var/lib/nova
-sudo rm -rf /home/$USER/openstack-helm
-sudo rm -rf /usr/local/bin/sigil
+sudo rm -rf $BOOTKUBE_DIR/openstack-helm
 pkill -f 'helm serve'
 helm repo remove local
